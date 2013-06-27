@@ -1,0 +1,31 @@
+- hosts: pis
+  gather_facts: False
+  vars_files:
+  - vars.yml
+  tasks:
+  - name: install packages
+    apt: pkg={{ item }}
+    sudo: yes
+    with_items: debian_pkgs
+    tags:
+    - setup
+
+  - name: create project directory {{ project_dir }}
+    file: dest={{ project_dir }} state=directory
+    tags:
+    - deploy
+
+  - name: copy over the movie
+    copy: src={{ movie_file }} dest={{ project_dir }}/movie.mp4
+    tags:
+    - deploy
+
+  - name: copy over the script
+    copy: src={{ script_file }} dest={{ project_dir }}/script.py
+    tags:
+    - deploy
+
+  - name: play the video
+    shell: executable=/bin/bash chdir={{project_dir}} python script.py {{project_dir}}/movie.mp4
+    tags:
+    - play

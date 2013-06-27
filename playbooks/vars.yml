@@ -1,0 +1,46 @@
+script_file: /home/feanil/src/pndp/gst1_test.py
+movie_file: /home/feanil/Downloads/serenity.mp4
+
+project_dir: /home/pi/ddp
+
+debian_pkgs:
+  - libgstreamer1.0-0
+  - libgstreamer1.0-0-dbg
+  - libgstreamer1.0-dev
+  - liborc-0.4-0
+  - liborc-0.4-0-dbg
+  - liborc-0.4-dev
+  - liborc-0.4-doc
+  - gir1.2-gst-plugins-base-1.0
+  - gir1.2-gstreamer-1.0
+  - gstreamer1.0-alsa
+  - gstreamer1.0-doc
+  - gstreamer1.0-omx
+  - gstreamer1.0-plugins-bad
+  - gstreamer1.0-plugins-bad-dbg
+  - gstreamer1.0-plugins-bad-doc
+  - gstreamer1.0-plugins-base
+  - gstreamer1.0-plugins-base-apps
+  - gstreamer1.0-plugins-base-dbg
+  - gstreamer1.0-plugins-base-doc
+  - gstreamer1.0-plugins-good
+  - gstreamer1.0-plugins-good-dbg
+  - gstreamer1.0-plugins-good-doc
+  - gstreamer1.0-plugins-ugly
+  - gstreamer1.0-plugins-ugly-dbg
+  - gstreamer1.0-plugins-ugly-doc
+  - gstreamer1.0-pulseaudio
+  - gstreamer1.0-tools
+  - gstreamer1.0-x
+  - libgstreamer-plugins-bad1.0-0
+  - libgstreamer-plugins-bad1.0-dev
+  - libgstreamer-plugins-base1.0-0
+  - libgstreamer-plugins-base1.0-dev
+  - python-pip
+  - python-zmq
+  - python-gi
+  - gir1.2-gstreamer-1.0
+  - gir1.2-gst-plugins-base-1.0
+  - gstreamer-tools
+  - python3-gi
+  
