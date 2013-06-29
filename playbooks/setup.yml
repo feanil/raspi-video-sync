@@ -13,12 +13,13 @@
   - name: create project directory {{ project_dir }}
     file: dest={{ project_dir }} state=directory
     tags:
+    - setup
     - deploy
 
   - name: copy over the movie
     copy: src={{ movie_file }} dest={{ project_dir }}/movie.mp4
     tags:
-    - deploy
+    - setup 
 
   - name: copy over the script
     copy: src={{ script_file }} dest={{ project_dir }}/script.py

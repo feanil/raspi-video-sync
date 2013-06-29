@@ -1,3 +1,4 @@
+#script_file: /home/feanil/src/pndp/video-player-1.0.py
 script_file: /home/feanil/src/pndp/gst1_test.py
 movie_file: /home/feanil/Downloads/serenity.mp4
 
@@ -43,4 +44,6 @@ debian_pkgs:
   - gir1.2-gst-plugins-base-1.0
   - gstreamer-tools
   - python3-gi
-  
+  - libgtk-3-0
+  - python-gtk2 
+  - python-sugar3
