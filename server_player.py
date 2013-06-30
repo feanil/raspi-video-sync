@@ -4,6 +4,21 @@ from gi.repository import Gst, GstNet, GObject
 from sys import argv
 import time
 from see import see
+import struct
+from socket import *
+from threading import Thread
+
+def broadcast_current_time(pipeline):
+    sock = socket(AF_INET, SOCK_DGRAM)
+    sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+    sock.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
+
+    while True:
+        success, nanoseconds = pipeline.query_position(Gst.Format.TIME)
+        msg = struct.pack("!Q", nanoseconds)
+        sock.sendto(msg, ('255.255.255.255', 1985))        
+        print((success, nanoseconds))
+        time.sleep(1)
 
 GObject.threads_init()
 Gst.init(None)
@@ -18,13 +33,16 @@ playbin = Gst.ElementFactory.make('playbin',None)
 pipeline.add(playbin)
 playbin.set_property('uri','file://' + video)
 
-# Create a network clock
-base_clock = pipeline.get_clock()
-net_clock = GstNet.NetTimeProvider(clock=base_clock)
-print("Net Clock: {} {} {}".format(net_clock.get_property('clock'), net_clock.get_property('active'),net_clock.get_property('address')))
-pipeline.use_clock(base_clock)
+broadcaster = Thread(target=broadcast_current_time,
+                     kwargs={"pipeline":pipeline},
+                     daemon=True)
+broadcaster.start()
 
 pipeline.set_state(Gst.State.PLAYING)
-print(pipeline.get_clock())
-time.sleep(60)
+for x in range(60):
+    time.sleep(1)
+    if x == 30:
+        pipeline.set_state(Gst.State.PAUSED)
+
 pipeline.set_state(Gst.State.NULL)
+

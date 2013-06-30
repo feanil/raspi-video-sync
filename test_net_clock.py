@@ -1,16 +1,17 @@
 import socket
 import time
-UDP_IP= "192.168.1.107"
-UDP_PORT=5637
+import struct
+UDP_IP= "<broadcast>"
+UDP_PORT=1985
 
 
 while True:
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.bind((UDP_IP, UDP_PORT))
-    
-        data, addr = sock.recvfrom(1)
-        print("Message: {}".format(data))
+
+        data, addr = sock.recvfrom(100)
+        print("Message: {}".format(struct.unpack('!Q',data)))
     except Exception:
         pass
     time.sleep(1)
