@@ -1,5 +1,5 @@
 #script_file: /home/feanil/src/pndp/video-player-1.0.py
-script_file: /home/feanil/src/pndp/gst1_test.py
+script_file: /home/feanil/src/pndp/client_player.py
 movie_file: /home/feanil/Downloads/serenity.mp4
 
 project_dir: /home/pi/ddp
