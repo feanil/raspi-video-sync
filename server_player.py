@@ -15,7 +15,8 @@ def broadcast_current_time(pipeline):
 
     while True:
         success, nanoseconds = pipeline.query_position(Gst.Format.TIME)
-        msg = struct.pack("!Q", nanoseconds)
+        playing_state = pipeline.get_state(timeout=Gst.CLOCK_TIME_NONE)
+        msg = struct.pack("!Qi", nanoseconds, playing_state[1])
         sock.sendto(msg, ('255.255.255.255', 1985))        
         print((success, nanoseconds))
         time.sleep(1)
@@ -39,10 +40,12 @@ broadcaster = Thread(target=broadcast_current_time,
 broadcaster.start()
 
 pipeline.set_state(Gst.State.PLAYING)
-for x in range(60):
+for x in range(120):
     time.sleep(1)
-    if x == 30:
-        pipeline.set_state(Gst.State.PAUSED)
+#    if x == 30:
+#        pipeline.set_state(Gst.State.PAUSED)
+#    if x == 35:
+#        pipeline.set_state(Gst.State.PLAYING)
 
 pipeline.set_state(Gst.State.NULL)
 
