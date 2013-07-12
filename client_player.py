@@ -34,10 +34,12 @@ def monitor_position(pipeline):
             print("Pausing.")
         elif difference < -250000000:
             # we are behind, jump forward.
-            pipeline.seek_simple(Gst.Format.TIME, Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT, position)
+            pipeline.seek_simple(
+                Gst.Format.TIME,
+                Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT,
+                position)
             print("Seeking to {}".format(position))
             pipeline.set_state(Gst.State.PLAYING)
-    
 
 # Get video location
 video = "/home/pi/ddp/movie.mp4"
