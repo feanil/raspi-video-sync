@@ -7,8 +7,11 @@ from see import see
 import struct
 from socket import *
 from threading import Thread
+import zmq
+import json
 
-end_loop = False
+next_loop = False
+context = zmq.Context()
 
 def broadcast_current_time(pipeline):
     sock = socket(AF_INET, SOCK_DGRAM)
@@ -31,29 +34,62 @@ def seek(pipeline, time):
 
 #TODO:  A thread for listening to zmq messages
 def zmq_listener(pipeline):
+    global next_loop
+    socket = context.socket(zmq.SUB)
+    socket.connect("tcp://localhost:5891")
+    socket.setsockopt_string(zmq.SUBSCRIBE, 'DDP')
     while True:
         # Recv messages
+        raw_string = socket.recv_string()
+        json_string = raw_string[4:]
+        message = json.loads(json_string) 
         # Unpack json
         if message['action'] == 'PLAY':
-            pass
+            pipeline.set_state(Gst.State.PLAYING)
         elif message['action'] == 'PAUSE':
-            pass
+            pipeline.set_state(Gst.State.PAUSED)
         elif message['action'] == 'SEEK':
             seek(pipeline, message['time'])
         elif message['action'] == 'NEXT':
-            end_loop = True
+            next_loop = True
 
-def loop(pipeline, start, end, first_run):
-    # Seek to the time provided.
-    # seek to start.
-    seek(pipeline, start)
+def close(current, target):
+    seconds_threshold = .1
+    
+    nano_threshold = int(seconds_threshold * 1e9)
+    if (target - current) < nano_threshold:
+        return True
+    else:
+        return False
 
-    if first_run:
-        end_loop = False
+def monitor_movie(pipeline):
+    global next_loop
+    # Read in the start and end times for each loop.
+    times = [] # TODO: load in times.
+    times = [
+        {'start': 20000000000, 'end': 30000000000},
+    ]
+    iter_times = iter(times)
+    if len(times) == 0:
+        print("No timecodes.")
+        return
 
-    if end_loop == False:
-        # TODO: get this worked out
-        gst_clock_id_wait_async( end, loop, (pipeline, start, end, False))
+    current_loop = next(iter_times)
+    monitor = True
+    while monitor:
+        success, nanoseconds = pipeline.query_position(Gst.Format.TIME)
+        if close(nanoseconds, current_loop['end']):
+            seek(pipeline, current_loop['start'])
+        if next_loop:
+            try:
+                current_loop= next(iter_times)
+                next_loop = False
+            except StopIteration:
+                # Stop the monitor loop after the last time set.
+                monitor = False
+        time.sleep(.05)
+
+    print("Monitor stopping.")
 
 GObject.threads_init()
 Gst.init(None)
@@ -73,16 +109,15 @@ broadcaster = Thread(target=broadcast_current_time,
                      daemon=True)
 broadcaster.start()
 
-# Read in the start and end times for each loop.
-times = []# TODO: Read in start and end times.
-for item in times:
-    start = item['loop_start']
-    end = item['loop_end']
+loop_monitor = Thread(target=monitor_movie,
+                      kwargs={"pipeline": pipeline},
+                      daemon=True)
+loop_monitor.start()
 
-    # TODO: Figure out the correct call.
-    gst_clock_id_wait_async( end, loop, (pipeline, start, end, True))
-    
-    
+zmq_control = Thread(target=zmq_listener,
+                     kwargs={"pipeline": pipeline},
+                     daemon = True)
+zmq_control.start()
 
 pipeline.set_state(Gst.State.PLAYING)
 #for x in range(120):
