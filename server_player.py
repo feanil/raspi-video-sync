@@ -94,7 +94,7 @@ def monitor_movie(pipeline):
 GObject.threads_init()
 Gst.init(None)
 # Get video location
-video = "/home/feanil/src/pndp/movie.mp4"
+video = "/home/feanil/src/pndp/videos/old/movie.mp4"
 if len(argv) > 1:
   video = argv[1]
 

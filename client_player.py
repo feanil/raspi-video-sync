@@ -33,16 +33,17 @@ def monitor_position(pipeline):
 
         if state == Gst.State.PAUSED:
             pipeline.set_state(Gst.State.PAUSED)
-
-        if difference > 250000000:
-            # we are ahead, pause and wait.
-            seek(pipeline, position)
-            print("Seeking to {}".format(position))
-        elif difference < -250000000:
-            # we are behind, jump forward.
-            seek(pipeline, position)
-            print("Seeking to {}".format(position))
+        elif state == Gst.State.PLAYING:
             pipeline.set_state(Gst.State.PLAYING)
+
+            if difference > 2500000000:
+                # we are ahead, pause and wait.
+                seek(pipeline, position)
+                print("Seeking back to {}".format(position))
+            elif difference < -2500000000:
+                # we are behind, jump forward.
+                seek(pipeline, position)
+                print("Seeking forward to {}".format(position))
 
 # Get video location
 video = "/home/pi/ddp/movie.mp4"
@@ -63,5 +64,5 @@ receiver.start()
 
 # Create a network clock
 pipeline.set_state(Gst.State.PLAYING)
-time.sleep(120)
+time.sleep(240)
 pipeline.set_state(Gst.State.NULL)

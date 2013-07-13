@@ -1,7 +1,10 @@
 #script_file: /home/feanil/src/pndp/video-player-1.0.py
 script_file: /home/feanil/src/pndp/client_player.py
 #movie_file: /home/feanil/Downloads/serenity.mp4
-movie_file: /home/feanil/src/pndp/videos/exptest_mov_720_6500_streaming.mov
+movie1: /home/feanil/src/pndp/videos/movie1.mov
+movie2: /home/feanil/src/pndp/videos/movie2.mov
+movie3: /home/feanil/src/pndp/videos/movie3.mov
+movie4: /home/feanil/src/pndp/videos/movie4.mov
 
 project_dir: /home/pi/ddp
 

@@ -1,9 +1,107 @@
 <html>
+  <head>
+    <style type="text/css">
+      .control-button {
+        display: inline-block;
+        margin-bottom: 2%;
+        height: 22%;
+        border-radius: 5px;
+        background-color: #0003FF;
+        text-align: center;
+        width: 100%;
+      }
+      .button-text {
+        display: block;
+        font-size: 2em;
+        color: white;
+        font-family: monospace;
+        margin: 0px auto;
+        text-decoration: none;
+        position: relative;
+        top: 50%;
+        border: solid 1px dark-gray;
+      }
+      .button-container {
+        margin: 0px auto;
+        display: block;
+        width: 90%;
+      }
+      .half-button {
+        display: inline-block;
+        width: 49%;
+      }
+      .half-button .button-text {
+        display: inline-block;
+      }
+
+      /* NEXT BUTTON */
+      .button-next {
+        background: -webkit-gradient(linear, left top, left bottom, from(#faa51a), to(#f47a20));
+        background: -moz-linear-gradient(top,  #faa51a,  #f47a20);
+      }
+      .button-next:active {
+        background: -webkit-gradient(linear, left top, left bottom, from(#f47a20), to(#faa51a));
+        background: -moz-linear-gradient(top,  #f47a20,  #faa51a);
+      }
+
+      /* PLAY BUTTON */
+      .button-play {
+        background: -webkit-gradient(linear, left top, left bottom, from(#18BC0A), to(#20F20D));
+        background: -moz-linear-gradient(top,  #18BC0A,  #20F20D);
+      }
+      .button-play:active {
+        background: -webkit-gradient(linear, left top, left bottom, from(#20F20D), to(#18BC0A));
+        background: -moz-linear-gradient(top,  #20F20D,  #18BC0A);
+      }
+
+      /* PREVIOUS BUTTON */
+      .button-previous {
+        background: -webkit-gradient(linear, left top, left bottom, from(#334FFF), to(#0003FF));
+        background: -moz-linear-gradient(top,  #334FFF,  #0003FF);
+      }
+      .button-previous:active {
+        background: -webkit-gradient(linear, left top, left bottom, from(#0003FF), to(#334FFF));
+        background: -moz-linear-gradient(top,  #f47a20,  #faa51a);
+      }
+
+      /* PAUSE BUTTON */
+      .button-pause {
+        background: -webkit-gradient(linear, left top, left bottom, from(#F7000B), to(#FF363A));
+        background: -moz-linear-gradient(top,  #F7000B,  #FF363A);
+      }
+      .button-pause:active {
+        background: -webkit-gradient(linear, left top, left bottom, from(#FF363A), to(#F7000B));
+        background: -moz-linear-gradient(top,  #F7000B,  #FF363A);
+      }
+
+    </style>
+  </head>
   <body>
-    <ul>
-      <li><a href='/pause'>PAUSE</a></li>
-      <li><a href='/play'>PLAY</a></li>
-      <li><a href='/next'>NEXT</a></li>
-    </ul>
+    <div class="button-container">
+      <div class="control-button button-pause">
+        <a class="button-text" href='/pause'>PAUSE</a>
+      </div>
+    </div>
+    <div class="button-container">
+      <div class="control-button button-play">
+        <a class="button-text" href='/play'>PLAY</a>
+      </div>
+    </div>
+    <div class="button-container">
+      <div class="control-button button-previous half-button">
+        <a class="button-text" href='/previous-loop'>PREVIOUS LOOP</a>
+      </div>
+      <div class="control-button button-previous half-button">
+        <a class="button-text" href='/previous-section'>PREVIOUS SECTION</a>
+      </div>
+    </div>
+    <div class="button-container">
+      <div class="control-button button-next half-button">
+        <a class="button-text" href='/next'>ALLOW NEXT</a>
+      </div>
+      <div class="control-button button-next half-button">
+        <a class="button-text" href='/next-jump'>JUMP TO NEXT</a>
+      </div>
+    <div>
   </body>
 </html>

@@ -1,32 +1,83 @@
+- hosts: pi1
+  gather_facts: False
+  vars_files:
+  - vars.yml
+  tasks:
+  - name: copy over the movie
+    copy: src={{ movie1 }} dest={{ project_dir }}/movie.mp4
+    tags:
+    - copy_movie
+
+- hosts: pi2
+  gather_facts: False
+  vars_files:
+  - vars.yml
+  tasks:
+  - name: copy over the movie
+    copy: src={{ movie2 }} dest={{ project_dir }}/movie.mp4
+    tags:
+    - copy_movie 
+
+- hosts: pi3
+  gather_facts: False
+  vars_files:
+  - vars.yml
+  tasks:
+  - name: copy over the movie
+    copy: src={{ movie3 }} dest={{ project_dir }}/movie.mp4
+    tags:
+    - copy_movie 
+
+- hosts: pi4
+  gather_facts: False
+  vars_files:
+  - vars.yml
+  tasks:
+  - name: copy over the movie
+    copy: src={{ movie4 }} dest={{ project_dir }}/movie.mp4
+    tags:
+    - copy_movie
+
 - hosts: pis
   gather_facts: False
   vars_files:
   - vars.yml
   tasks:
-  - name: install packages
-    apt: pkg={{ item }}
+  - name: add mirror
+    shell: 'echo  "deb http://vontaene.de/raspbian-updates/ . main" >> /etc/apt/sources.list'
     sudo: yes
-    with_items: debian_pkgs
+    when: one_time is defined
+
+  - name: apt-get update
+    shell: 'apt-get update'
+    sudo: yes
+    when: one_time is defined
+
+  - name: install packages
+    apt: pkg={{",".join(debian_pkgs)}} install_recommends=yes force=yes
+    sudo: yes
     tags:
     - setup
+    when: one_time is defined
 
+- hosts: pis
+  gather_facts: False
+  vars_files:
+  - vars.yml
+
+  tasks:
   - name: create project directory {{ project_dir }}
     file: dest={{ project_dir }} state=directory
     tags:
     - setup
-    - deploy
-
-  - name: copy over the movie
-    copy: src={{ movie_file }} dest={{ project_dir }}/movie.mp4
-    tags:
-    - setup 
 
   - name: copy over the script
     copy: src={{ script_file }} dest={{ project_dir }}/script.py
     tags:
-    - deploy
+    - setup
 
   - name: play the video
     shell: executable=/bin/bash chdir={{project_dir}} python script.py {{project_dir}}/movie.mp4
     tags:
     - play
+

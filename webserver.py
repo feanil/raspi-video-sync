@@ -33,4 +33,5 @@ class Base(object):
         print("Sending {}.".format(message))
         raise cherrypy.HTTPRedirect("/") 
 
+cherrypy.config.update({'server.socket_host': '0.0.0.0'})
 cherrypy.quickstart(Base())
