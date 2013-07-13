@@ -64,5 +64,7 @@ receiver.start()
 
 # Create a network clock
 pipeline.set_state(Gst.State.PLAYING)
-time.sleep(240)
+while True:
+    time.sleep(1)
+
 pipeline.set_state(Gst.State.NULL)
