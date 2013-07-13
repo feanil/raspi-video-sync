@@ -11,7 +11,25 @@ import zmq
 import json
 
 next_loop = False
+loop_index = 0
 context = zmq.Context()
+loop_times = []
+# Read in the start and end times for each loop.
+def nano(timestamp):
+    minute, sec = timestamp.split(':')
+    all_seconds = int(minute)*60 + int(sec)
+    return all_seconds*1e9
+
+def get_loop_times(file='loops.json'):
+    loop_times = []
+    human_loops = json.load(open('loops.json'))
+    for item in human_loops:
+        greadable = {}
+        for k,v in item.items():
+            greadable[k] = nano(v)
+        loop_times.append(greadable)
+
+    return loop_times
 
 def broadcast_current_time(pipeline):
     sock = socket(AF_INET, SOCK_DGRAM)
@@ -34,7 +52,7 @@ def seek(pipeline, time):
 
 #TODO:  A thread for listening to zmq messages
 def zmq_listener(pipeline):
-    global next_loop
+    global loop_index
     socket = context.socket(zmq.SUB)
     socket.connect("tcp://localhost:5891")
     socket.setsockopt_string(zmq.SUBSCRIBE, 'DDP')
@@ -51,7 +69,8 @@ def zmq_listener(pipeline):
         elif message['action'] == 'SEEK':
             seek(pipeline, message['time'])
         elif message['action'] == 'NEXT':
-            next_loop = True
+            print('Got Next.')
+            loop_index += 1
 
 def close(current, target):
     seconds_threshold = .1
@@ -63,38 +82,28 @@ def close(current, target):
         return False
 
 def monitor_movie(pipeline):
-    global next_loop
-    # Read in the start and end times for each loop.
-    times = [] # TODO: load in times.
-    times = [
-        {'start': 20000000000, 'end': 30000000000},
-    ]
-    iter_times = iter(times)
-    if len(times) == 0:
+    global loop_index
+    global loop_times
+
+    if len(loop_times) == 0:
         print("No timecodes.")
         return
 
-    current_loop = next(iter_times)
     monitor = True
     while monitor:
+        current_loop = loop_times[loop_index]
         success, nanoseconds = pipeline.query_position(Gst.Format.TIME)
         if close(nanoseconds, current_loop['end']):
             seek(pipeline, current_loop['start'])
-        if next_loop:
-            try:
-                current_loop= next(iter_times)
-                next_loop = False
-            except StopIteration:
-                # Stop the monitor loop after the last time set.
-                monitor = False
         time.sleep(.05)
 
     print("Monitor stopping.")
 
+loop_times = get_loop_times()
 GObject.threads_init()
 Gst.init(None)
 # Get video location
-video = "/home/feanil/src/pndp/videos/old/movie.mp4"
+video = "/home/feanil/src/pndp/videos/movie1.mov"
 if len(argv) > 1:
   video = argv[1]
 
@@ -120,12 +129,6 @@ zmq_control = Thread(target=zmq_listener,
 zmq_control.start()
 
 pipeline.set_state(Gst.State.PLAYING)
-#for x in range(120):
-#    time.sleep(1)
-#    if x == 30:
-#        pipeline.set_state(Gst.State.PAUSED)
-#    if x == 35:
-#        pipeline.set_state(Gst.State.PLAYING)
 try:
     while True:
         time.sleep(1)
