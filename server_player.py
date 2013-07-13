@@ -14,15 +14,24 @@ next_loop = False
 loop_index = 0
 context = zmq.Context()
 loop_times = []
+section_times = []
+
 # Read in the start and end times for each loop.
 def nano(timestamp):
     minute, sec = timestamp.split(':')
     all_seconds = int(minute)*60 + int(sec)
     return all_seconds*1e9
 
-def get_loop_times(file='loops.json'):
+def get_section_times(filename="sections.json"):
+    section_times = []
+    human_loop = json.load(open(filename))
+    for item in human_loop:
+        section_times.append(nano(item))
+    return section_times
+
+def get_loop_times(filename='loops.json'):
     loop_times = []
-    human_loops = json.load(open('loops.json'))
+    human_loops = json.load(open(filename))
     for item in human_loops:
         greadable = {}
         for k,v in item.items():
@@ -80,6 +89,11 @@ def zmq_listener(pipeline):
             loop_index -= 1
             loop_index %= len(loop_times)
             seek(pipeline, loop_times[loop_index]['start'])
+        elif message['action'] == 'PREV_SECTION':
+            print("Prev Section")
+            loop_index -= 1
+            loop_index %= len(loop_times)
+            seek(pipeline, section_times[loop_index])
 
 def close(current, target):
     seconds_threshold = .1
@@ -109,6 +123,8 @@ def monitor_movie(pipeline):
     print("Monitor stopping.")
 
 loop_times = get_loop_times()
+section_times = get_section_times()
+
 GObject.threads_init()
 Gst.init(None)
 # Get video location
