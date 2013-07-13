@@ -14,6 +14,12 @@ Gst.init(None)
 UDP_IP= "<broadcast>"
 UDP_PORT= 1985
 
+def seek(pipeline, time):
+    pipeline.seek_simple(
+        Gst.Format.TIME,
+        Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT,
+        time)
+
 def monitor_position(pipeline):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     #s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -30,14 +36,11 @@ def monitor_position(pipeline):
 
         if difference > 250000000:
             # we are ahead, pause and wait.
-            pipeline.set_state(Gst.State.PAUSED)
-            print("Pausing.")
+            seek(pipeline, position)
+            print("Seeking to {}".format(position))
         elif difference < -250000000:
             # we are behind, jump forward.
-            pipeline.seek_simple(
-                Gst.Format.TIME,
-                Gst.SeekFlags.FLUSH | Gst.SeekFlags.KEY_UNIT,
-                position)
+            seek(pipeline, position)
             print("Seeking to {}".format(position))
             pipeline.set_state(Gst.State.PLAYING)
 
