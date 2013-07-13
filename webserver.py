@@ -27,6 +27,16 @@ class Base(object):
         message = {'action': 'NEXT'}
         self.send_message(message)
 
+    @cherrypy.expose
+    def next_jump(self):
+        message = {'action': 'NEXT_LOOP'}
+        self.send_message(message)
+
+    @cherrypy.expose
+    def previous_loop(self):
+        message = {'action': 'PREV_LOOP'}
+        self.send_message(message)
+
     def send_message(self, message):
         raw_message = json.dumps(message)
         socket.send_string("DDP {}".format(raw_message)) 

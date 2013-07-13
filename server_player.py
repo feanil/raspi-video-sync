@@ -71,6 +71,15 @@ def zmq_listener(pipeline):
         elif message['action'] == 'NEXT':
             print('Got Next.')
             loop_index += 1
+            loop_index %= len(loop_times)
+        elif message['action'] == 'NEXT_LOOP':
+            loop_index += 1
+            loop_index %= len(loop_times)
+            seek(pipeline, loop_times[loop_index]['start'])
+        elif message['action'] == 'PREV_LOOP':
+            loop_index -= 1
+            loop_index %= len(loop_times)
+            seek(pipeline, loop_times[loop_index]['start'])
 
 def close(current, target):
     seconds_threshold = .1
