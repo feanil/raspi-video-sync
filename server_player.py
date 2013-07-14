@@ -91,8 +91,6 @@ def zmq_listener(pipeline):
             seek(pipeline, loop_times[loop_index]['start'])
         elif message['action'] == 'PREV_SECTION':
             print("Prev Section")
-            loop_index -= 1
-            loop_index %= len(loop_times)
             seek(pipeline, section_times[loop_index])
 
 def close(current, target):
@@ -128,7 +126,7 @@ section_times = get_section_times()
 GObject.threads_init()
 Gst.init(None)
 # Get video location
-video = "/home/feanil/src/pndp/videos/movie1.mov"
+video = "/home/feanil/src/pndp/videos/movie0.mov"
 if len(argv) > 1:
   video = argv[1]
 
